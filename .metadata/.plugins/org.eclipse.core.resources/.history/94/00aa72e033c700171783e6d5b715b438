@@ -25,9 +25,9 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			
 			*/
-			
-			
+			/*
 			// load the FXML resource
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("PepperJFX.fxml"));
 			// store the root element so that the controllers can use it
@@ -51,7 +51,7 @@ public class Main extends Application {
 					controller.setClosed();
 				}
 			}));
-			
+			*/
 		}
 		catch (Exception e)
 		{

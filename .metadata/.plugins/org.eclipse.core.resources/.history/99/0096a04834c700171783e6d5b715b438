@@ -16,9 +16,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class PepperJFXController {
-	// the FXML startBtn
+	// the FXML button
 	@FXML
-	private Button startBtn;
+	private Button button;
 	// the FXML image view
 	@FXML
 	private ImageView currentFrame;
@@ -27,16 +27,16 @@ public class PepperJFXController {
 	private ScheduledExecutorService timer;
 	// the OpenCV object that realizes the video capture
 	private VideoCapture capture = new VideoCapture();
-	// a flag to change the startBtn behavior
+	// a flag to change the button behavior
 	private boolean cameraActive = false;
 	// the id of the camera to be used
 	private static int cameraId = 0;
 	
 	/**
-	 * The action triggered by pushing the startBtn on the GUI
+	 * The action triggered by pushing the button on the GUI
 	 *
 	 * @param event
-	 *            the push startBtn event
+	 *            the push button event
 	 */
 	@FXML
 	protected void startCamera(ActionEvent event)
@@ -68,8 +68,8 @@ public class PepperJFXController {
 				this.timer = Executors.newSingleThreadScheduledExecutor();
 				this.timer.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
 				
-				// update the startBtn content
-				this.startBtn.setText("Stop Camera");
+				// update the button content
+				this.button.setText("Stop Camera");
 			}
 			else
 			{
@@ -81,8 +81,8 @@ public class PepperJFXController {
 		{
 			// the camera is not active at this point
 			this.cameraActive = false;
-			// update again the startBtn content
-			this.startBtn.setText("Start Camera");
+			// update again the button content
+			this.button.setText("Start Camera");
 			
 			// stop the timer
 			this.stopAcquisition();
