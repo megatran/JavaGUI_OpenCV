@@ -44,7 +44,7 @@ public class Main extends Application {
 			primaryStage.show();
 			
 			// set the proper behavior on closing the application
-			PepperJFXController controller = loader.getController();
+			PepperJFXRobotController controller = loader.getController();
 			primaryStage.setOnCloseRequest((new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent we)
 				{

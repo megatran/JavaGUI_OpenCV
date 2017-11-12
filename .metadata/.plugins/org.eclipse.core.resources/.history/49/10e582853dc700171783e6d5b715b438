@@ -1,0 +1,18 @@
+package application;
+
+//Aldebaran lib
+import com.aldebaran.qi.helper.proxies.ALVideoDevice;
+import com.aldebaran.qi.helper.proxies.ALVideoDeviceProxy;
+
+
+public class CameraModule {
+
+	private ALVideoDevice videoDevice;        
+	
+	public CameraModule(String robotUrl) {
+		
+		// Create a proxy to ALVideoDevice on the robot
+		
+		this.videoDevice = videoDevice;
+
+	}

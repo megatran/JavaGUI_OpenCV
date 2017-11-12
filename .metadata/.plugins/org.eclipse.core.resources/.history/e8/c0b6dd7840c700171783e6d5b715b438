@@ -1,0 +1,33 @@
+package application;
+
+import com.aldebaran.qi.Application;
+import com.aldebaran.qi.Session;
+import org.opencv.core.Core;
+
+//Aldebaran lib
+import com.aldebaran.qi.helper.proxies.ALVideoDevice;
+
+
+public class CameraModule {
+
+	private ALVideoDevice camProxy;        
+	
+	public CameraModule(String[] robotIP) {
+        // Create a new application
+        Application application;
+        application = new com.aldebaran.qi.Application(robotIP);
+        // Start your application
+        application.start();
+        
+		// Create a proxy to ALVideoDevice on the robot
+		this.camProxy = new ALVideoDevice(application.session());
+		
+		
+		// Then specify the resolution among : kQQVGA (160x120), kQVGA (320x240),
+		// kVGA (640x480) or k4VGA (1280x960, only with the HD camera).
+		// (Definitions are available in alvisiondefinitions.h)
+		
+		String clientName = camProxy.subscribe("test", kQVGA, kBGRColorSpace, 30)
+		
+
+	}
