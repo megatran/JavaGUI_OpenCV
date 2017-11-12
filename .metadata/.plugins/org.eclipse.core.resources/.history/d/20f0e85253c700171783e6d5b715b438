@@ -38,7 +38,7 @@ public class CameraModule {
 	private Mat imageHeader;
 	private Boolean isConnected = false;
 	
-	private ALRobotPosture robotPose;
+	private ALRobotPosture robotPosture;
 	
 	public CameraModule(String robotIP) {
         // Create a new application

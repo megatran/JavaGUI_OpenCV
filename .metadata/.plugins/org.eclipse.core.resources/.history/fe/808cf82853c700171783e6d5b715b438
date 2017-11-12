@@ -9,7 +9,6 @@ import org.opencv.core.Mat;
 import com.aldebaran.qi.Application;
 import com.aldebaran.qi.CallError;
 import com.aldebaran.qi.Session;
-import com.aldebaran.qi.helper.proxies.ALRobotPosture;
 //Aldebaran lib
 import com.aldebaran.qi.helper.proxies.ALVideoDevice;
 
@@ -38,8 +37,6 @@ public class CameraModule {
 	private Mat imageHeader;
 	private Boolean isConnected = false;
 	
-	private ALRobotPosture robotPose;
-	
 	public CameraModule(String robotIP) {
         // Create a new application
 		this.clientName = null;
@@ -52,9 +49,6 @@ public class CameraModule {
 		// Create a proxy to ALVideoDevice on the robot
 		try {
 			this.camProxy = new ALVideoDevice(application.session());
-			//Temporary posture. Will refactor this out of camera 
-			this.robotPose = new ALRobotPosture(application.session());
-			
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -127,31 +121,5 @@ public class CameraModule {
 				System.out.println("Failed to unsubscribe");
 			}
 		}
-	}
-	
-	//Temporary Function: Make robot stand up. Will refactor this out of camera module soon!
-	public boolean goToPosture(String postureName, double speed) {
-		//Get posture list prints out the options
-		//Here is what they do:
-		//Crouch = deactivated pose
-		//Stand = generic stand with no flair
-		//StandInit = looks around as if discovering it was just activated 
-		//StandZero = stands with arms outstretched forward
-		
-		if(speed < 0 || speed > 1.0) {
-			//Log.info("Speed must be a relative speed between 0 and 1.0.");
-			return false;
-		}
-		else {
-			try {
-				
-				return robotPose.goToPosture(postureName, (float) speed);
-			} catch (CallError | InterruptedException e) {
-				e.printStackTrace();
-				//Log.info("Go to posture has failed.");
-				return false;
-			}
-		}
-		
 	}
 }

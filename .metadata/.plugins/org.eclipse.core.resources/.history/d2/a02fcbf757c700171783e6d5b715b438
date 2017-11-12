@@ -177,12 +177,12 @@ public class PepperJFXRobotController {
 	@FXML
 	protected void robotStandUp(ActionEvent event) {
 		System.out.println("Stand up");
-		robotCamera.goToPosture("Stand", 0.8);
+		robotCamera.goToPosture("Stand", 1);
 	}
 	@FXML
 	protected void robotCrouch(ActionEvent event) {
 		System.out.println("Crouch");
-		robotCamera.goToPosture("Crouch", 0.8);
+		robotCamera.goToPosture("Crouch", 1);
 	}
 	
 	/**

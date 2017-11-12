@@ -38,8 +38,6 @@ public class CameraModule {
 	private Mat imageHeader;
 	private Boolean isConnected = false;
 	
-	private ALRobotPosture robotPose;
-	
 	public CameraModule(String robotIP) {
         // Create a new application
 		this.clientName = null;
@@ -53,7 +51,7 @@ public class CameraModule {
 		try {
 			this.camProxy = new ALVideoDevice(application.session());
 			//Temporary posture. Will refactor this out of camera 
-			this.robotPose = new ALRobotPosture(application.session());
+			robotPose = new ALRobotPosture(application.session());
 			
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
