@@ -5,8 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.opencv.core.Mat;
+import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
 
 import Utils.Utils;
 import javafx.event.ActionEvent;
@@ -19,9 +19,14 @@ public class PepperJFXWebcamController {
 	// the FXML startBtn
 	@FXML
 	private Button startBtn;
+	@FXML
+	private Button standBtn;
+	@FXML
+	private Button crouchBtn;
 	// the FXML image view
 	@FXML
 	private ImageView currentFrame;
+
 	
 	// a timer for acquiring the video stream
 	private ScheduledExecutorService timer;
@@ -30,7 +35,7 @@ public class PepperJFXWebcamController {
 	// a flag to change the startBtn behavior
 	private boolean cameraActive = false;
 	// the id of the camera to be used
-	private static int cameraId = 0;
+	private static int cameraId = 1;
 	
 	/**
 	 * The action triggered by pushing the startBtn on the GUI
@@ -162,6 +167,17 @@ public class PepperJFXWebcamController {
 	private void updateImageView(ImageView view, Image image)
 	{
 		Utils.onFXThread(view.imageProperty(), image);
+	}
+	
+	@FXML
+	protected void robotStandUp(ActionEvent event) {
+		System.out.println("Stand up");
+		//robotCamera.goToPosture("Stand", 0.8);
+	}
+	@FXML
+	protected void robotCrouch(ActionEvent event) {
+		System.out.println("Crouch");
+		//robotCamera.goToPosture("Crouch", 0.8);
 	}
 	
 	/**

@@ -1,9 +1,0 @@
-package application;
-
-public class PepperJFXController {
-	// the FXML button
-	@FXML
-	private Button button;
-	// the FXML image view
-	@FXML	
-}
