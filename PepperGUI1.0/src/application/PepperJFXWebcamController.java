@@ -5,8 +5,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.opencv.core.Mat;
-import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
 
 import Utils.Utils;
 import javafx.event.ActionEvent;
@@ -35,7 +35,12 @@ public class PepperJFXWebcamController {
 	// a flag to change the startBtn behavior
 	private boolean cameraActive = false;
 	// the id of the camera to be used
-	private static int cameraId = 1;
+	private static int cameraId = 0;
+	
+	
+	// SURF object to detect
+	SurfImage objectToDetect = new SurfImage("images/eatthatfrog.jpg");
+	private boolean showMatches = false;
 	
 	/**
 	 * The action triggered by pushing the startBtn on the GUI
@@ -46,6 +51,7 @@ public class PepperJFXWebcamController {
 	@FXML
 	protected void startCamera(ActionEvent event)
 	{
+		
 		if (!this.cameraActive)
 		{
 			// start the video capture
@@ -55,6 +61,7 @@ public class PepperJFXWebcamController {
 			if (this.capture.isOpened())
 			{
 				this.cameraActive = true;
+				objectToDetect.getSurfFeatures();
 				
 				// grab a frame every 33 ms (30 frames/sec)
 				Runnable frameGrabber = new Runnable() {
@@ -64,8 +71,16 @@ public class PepperJFXWebcamController {
 					{
 						// effectively grab and process a single frame
 						Mat frame = grabFrame();
+						SurfImage currentSUFTImageFrame = new SurfImage(frame);
+						currentSUFTImageFrame.getSurfFeatures();
+						objectToDetect.setMacthThreshold(50);
+						Boolean foundBook = objectToDetect.isMatchWith(currentSUFTImageFrame, true);
+						
+						
 						// convert and show the frame
 						Image imageToShow = Utils.mat2Image(frame);
+						if(foundBook)
+							imageToShow = Utils.mat2Image(objectToDetect.getMatchesImg());
 						updateImageView(currentFrame, imageToShow);
 					}
 				};

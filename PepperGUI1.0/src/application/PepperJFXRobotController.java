@@ -41,6 +41,8 @@ public class PepperJFXRobotController {
 	private String robotIP = "tcp://10.42.0.131:9559";
 	private CameraModule robotCamera = new CameraModule(robotIP);
 
+	// SURF object to detect
+	SurfImage objectToDetect = new SurfImage("images/eatthatfrog.jpg");
 	
 	/**
 	 * The action triggered by pushing the startBtn on the GUI
@@ -56,11 +58,14 @@ public class PepperJFXRobotController {
 			// start the video capture
 			robotCamera.connectRobotCamera("test");
 			
+			
 			// is the video stream available?
 			if (this.robotCamera.robotCameraConnected())
 			{
 				this.cameraActive = true;
-				
+				objectToDetect.getSurfFeatures(); //get suft feature
+				objectToDetect.setMacthThreshold(10); //Mess with thresholds to obtain optimal result
+				objectToDetect.setnndrRatio(0.7f);
 				// grab a frame every 33 ms (30 frames/sec)
 				Runnable frameGrabber = new Runnable() {
 					
@@ -69,10 +74,20 @@ public class PepperJFXRobotController {
 					{
 						// effectively grab and process a single frame
 						Mat frame = robotCamera.startStreaming();
+						
+						SurfImage currentSUFTImageFrame = new SurfImage(frame);
+						currentSUFTImageFrame.getSurfFeatures();
+						objectToDetect.setMacthThreshold(50);
+						Boolean foundObject = objectToDetect.isMatchWith(currentSUFTImageFrame, true);
+						
+						
 						// convert and show the frame
 						Image imageToShow = Utils.mat2Image(frame);
+						if(foundObject)
+							imageToShow = Utils.mat2Image(objectToDetect.getMatchesImg());
 						updateImageView(currentFrame, imageToShow);
-					}
+					}					
+					
 				};
 				
 				this.timer = Executors.newSingleThreadScheduledExecutor();
