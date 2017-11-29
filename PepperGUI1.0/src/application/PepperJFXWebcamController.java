@@ -41,6 +41,7 @@ public class PepperJFXWebcamController {
 	// SURF object to detect
 	SurfImage objectToDetect = new SurfImage("images/eatthatfrog.jpg");
 	private boolean showMatches = false;
+	private boolean showOutline = true;
 	
 	/**
 	 * The action triggered by pushing the startBtn on the GUI
@@ -74,13 +75,23 @@ public class PepperJFXWebcamController {
 						SurfImage currentSUFTImageFrame = new SurfImage(frame);
 						currentSUFTImageFrame.getSurfFeatures();
 						objectToDetect.setMacthThreshold(50);
-						Boolean foundBook = objectToDetect.isMatchWith(currentSUFTImageFrame, true);
+						Boolean foundBook = objectToDetect.isMatchWith(currentSUFTImageFrame, false, true); //last input for outline image
 						
 						
 						// convert and show the frame
 						Image imageToShow = Utils.mat2Image(frame);
-						if(foundBook)
+						if(foundBook && showMatches) {
+
 							imageToShow = Utils.mat2Image(objectToDetect.getMatchesImg());
+						} 
+						else if(foundBook && showOutline) {
+
+							imageToShow = Utils.mat2Image(objectToDetect.getObjectInScene());
+						} 
+						else if (foundBook && !showMatches) {
+							Imgproc.putText(frame, "Book Found.", new org.opencv.core.Point(30,30), org.opencv.core.Core.FONT_HERSHEY_COMPLEX_SMALL, 0.8, new org.opencv.core.Scalar(200,200,250), 1, org.opencv.core.Core.LINE_AA, true);
+							imageToShow = Utils.mat2Image(frame);
+						}
 						updateImageView(currentFrame, imageToShow);
 					}
 				};

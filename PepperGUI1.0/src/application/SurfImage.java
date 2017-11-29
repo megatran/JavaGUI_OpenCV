@@ -1,3 +1,5 @@
+package application;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,7 +77,7 @@ public class SurfImage {
 		if(produceMatchImage)
 			makeMatchImage(goodMatchesList, scene);
 
-		if(getHomographyImage)
+		if(getHomographyImage && goodMatchesList.size() >= matchThreshold)
 			makeHomographyImage(scene, goodMatchesList);
 
 		return goodMatchesList;
