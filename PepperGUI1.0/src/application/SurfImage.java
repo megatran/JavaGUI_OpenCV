@@ -102,7 +102,12 @@ public class SurfImage {
 		scnMatOfPoint2f.fromList(scenePoints);
 
 		Mat homography = Calib3d.findHomography(objMatOfPoint2f, scnMatOfPoint2f, Calib3d.RANSAC, 3);
-
+		
+		if( homography.empty()) {
+			objectInScene = scene.getObjectImg();
+			return;
+		}
+		
 		Mat obj_corners = new Mat(4, 1, CvType.CV_32FC2);
 		Mat scene_corners = new Mat(4, 1, CvType.CV_32FC2);
 

@@ -12,6 +12,7 @@ import com.aldebaran.qi.Session;
 import com.aldebaran.qi.helper.proxies.ALRobotPosture;
 //Aldebaran lib
 import com.aldebaran.qi.helper.proxies.ALVideoDevice;
+import com.aldebaran.qi.helper.proxies.ALTextToSpeech;
 
 class videoResolution {
 	// kQQVGA (160x120), kQVGA (320x240),
@@ -39,6 +40,7 @@ public class CameraModule {
 	private Boolean isConnected = false;
 	
 	private ALRobotPosture robotPose;
+	private ALTextToSpeech robotSpeak;
 	
 	public CameraModule(String robotIP) {
         // Create a new application
@@ -54,6 +56,8 @@ public class CameraModule {
 			this.camProxy = new ALVideoDevice(application.session());
 			//Temporary posture. Will refactor this out of camera 
 			this.robotPose = new ALRobotPosture(application.session());
+			// Temporary speech. Will refactor this out of camera
+			this.robotSpeak = new ALTextToSpeech(application.session());
 			
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -153,5 +157,17 @@ public class CameraModule {
 			}
 		}
 		
+	}
+	//Temporary Function: Make robot talk. Will refactor this out of camera module soon!
+	public void pepperSays(String sentence) {
+		try {
+			this.robotSpeak.say(sentence);
+		} catch (CallError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

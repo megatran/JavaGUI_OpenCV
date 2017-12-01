@@ -42,9 +42,10 @@ public class PepperJFXRobotController {
 	private CameraModule robotCamera = new CameraModule(robotIP);
 
 	// SURF object to detect
-	SurfImage objectToDetect = new SurfImage("images/eatthatfrog.jpg");
-	private boolean showMatches = false;
-	private boolean showOutline = true;
+		SurfImage bookSurfImage = new SurfImage("images/eatthatfrog.jpg");
+		SurfImage cardSurfImage = new SurfImage("images/card.jpg");
+		private boolean showMatches = false;
+		private boolean showOutline = true;
 	
 	/**
 	 * The action triggered by pushing the startBtn on the GUI
@@ -65,9 +66,11 @@ public class PepperJFXRobotController {
 			if (this.robotCamera.robotCameraConnected())
 			{
 				this.cameraActive = true;
-				objectToDetect.getSurfFeatures(); //get suft feature
-				objectToDetect.setMacthThreshold(10); //Mess with thresholds to obtain optimal result
-				objectToDetect.setnndrRatio(0.7f);
+				bookSurfImage.getSurfFeatures();
+				cardSurfImage.getSurfFeatures();
+				
+				cardSurfImage.setMacthThreshold(20);
+				bookSurfImage.setMacthThreshold(40);
 				// grab a frame every 33 ms (30 frames/sec)
 				Runnable frameGrabber = new Runnable() {
 					
@@ -79,24 +82,49 @@ public class PepperJFXRobotController {
 						
 						SurfImage currentSUFTImageFrame = new SurfImage(frame);
 						currentSUFTImageFrame.getSurfFeatures();
-						objectToDetect.setMacthThreshold(50);
-						Boolean foundBook = objectToDetect.isMatchWith(currentSUFTImageFrame, showMatches, showOutline);
-						
+						Boolean foundBook = bookSurfImage.isMatchWith(currentSUFTImageFrame, showMatches, showOutline); //last input for outline image
 						
 						// convert and show the frame
 						Image imageToShow = Utils.mat2Image(frame);
-						if(foundBook && showMatches) {
-
-							imageToShow = Utils.mat2Image(objectToDetect.getMatchesImg());
-						} 
-						else if(foundBook && showOutline) {
-
-							imageToShow = Utils.mat2Image(objectToDetect.getObjectInScene());
-						} 
-						else if (foundBook && !showMatches) {
+						/*if(foundBook && !showOutline) {
 							Imgproc.putText(frame, "Book Found.", new org.opencv.core.Point(30,30), org.opencv.core.Core.FONT_HERSHEY_COMPLEX_SMALL, 0.8, new org.opencv.core.Scalar(200,200,250), 1, org.opencv.core.Core.LINE_AA, true);
+							imageToShow = Utils.mat2Image(bookSurfImage.getMatchesImg());
+						} 
+						else*/
+						if(foundBook && showMatches) {
+							imageToShow = Utils.mat2Image(bookSurfImage.getMatchesImg());
+						}
+						else if(foundBook && showOutline) {
+							frame = bookSurfImage.getObjectInScene();
+							SurfImage fr = new SurfImage(frame);
+							fr.getSurfFeatures();
+							Boolean foundCard = cardSurfImage.isMatchWith(fr, showMatches, showOutline);
+							
+							if(foundCard) {
+								frame = cardSurfImage.getObjectInScene();
+								Imgproc.putText(frame, "Book and Card Found.", new org.opencv.core.Point(30,30), org.opencv.core.Core.FONT_HERSHEY_TRIPLEX, 1, new org.opencv.core.Scalar(-200,-200,250));
+								robotCamera.pepperSays("\\vol=100\\I see a book and a card.");
+							}else {
+								Imgproc.putText(frame, "Book Found.", new org.opencv.core.Point(30,30), org.opencv.core.Core.FONT_HERSHEY_TRIPLEX, 1, new org.opencv.core.Scalar(-200,-200,250));
+								robotCamera.pepperSays("\\vol=100\\I found a book");
+							}
+
 							imageToShow = Utils.mat2Image(frame);
 						}
+						/*else if (foundBook && !showMatches) {
+							Imgproc.putText(frame, "Book Found.", new org.opencv.core.Point(30,30), org.opencv.core.Core.FONT_HERSHEY_COMPLEX_SMALL, 0.8, new org.opencv.core.Scalar(200,200,250), 1, org.opencv.core.Core.LINE_AA, true);
+							imageToShow = Utils.mat2Image(frame);
+						}*/
+						else if (!foundBook  && showOutline) {
+							Boolean foundCard = cardSurfImage.isMatchWith(currentSUFTImageFrame, false, true);
+							
+							if(foundCard) {
+								frame = cardSurfImage.getObjectInScene();
+								Imgproc.putText(frame, "Card Found.", new org.opencv.core.Point(50,50), org.opencv.core.Core.FONT_HERSHEY_TRIPLEX, 1, new org.opencv.core.Scalar(250,250,250));
+								imageToShow = Utils.mat2Image(frame);
+								robotCamera.pepperSays("\\vol=100\\Hey! I found a card!");
+							}
+						}						
 						updateImageView(currentFrame, imageToShow);
 					}					
 					

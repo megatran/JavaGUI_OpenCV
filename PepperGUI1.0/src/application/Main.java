@@ -44,7 +44,7 @@ public class Main extends Application {
 			primaryStage.show();
 			
 			// set the proper behavior on closing the application
-			PepperJFXWebcamController controller = loader.getController();
+			PepperJFXRobotController controller = loader.getController();
 			primaryStage.setOnCloseRequest((new EventHandler<WindowEvent>() {
 				public void handle(WindowEvent we)
 				{
@@ -60,7 +60,7 @@ public class Main extends Application {
 	}
 	
 	/**
-	 * For launching the application...
+	 * For launching the application... //
 	 * 
 	 * @param args
 	 *            optional params
