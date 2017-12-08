@@ -30,7 +30,7 @@ public class SurfImage {
 	private Mat objectMat;
 	private MatOfKeyPoint objectKeyPoints;
 	private FeatureDetector featureDetector;
-	private MatOfKeyPoint objectDescriptors;
+	private MatOfKeyPoint objectDescriptor;
 	private DescriptorExtractor descriptorExtractor;
 	
 	public SurfImage(String imagePath){
@@ -55,9 +55,9 @@ public class SurfImage {
 		featureDetector.detect(objectMat, objectKeyPoints);
 		
 		//Compute the key points of the image
-		objectDescriptors = new MatOfKeyPoint();
+		objectDescriptor = new MatOfKeyPoint();
 		descriptorExtractor = DescriptorExtractor.create(DescriptorExtractor.SURF);
-        descriptorExtractor.compute(objectMat, objectKeyPoints, objectDescriptors);
+        descriptorExtractor.compute(objectMat, objectKeyPoints, objectDescriptor);
 	}
 
 	public Mat getObjectMat() {
@@ -84,12 +84,12 @@ public class SurfImage {
 		this.featureDetector = featureDetector;
 	}
 
-	public MatOfKeyPoint getObjectDescriptors() {
-		return objectDescriptors;
+	public MatOfKeyPoint getObjectDescriptor() {
+		return objectDescriptor;
 	}
 
-	public void setObjectDescriptors(MatOfKeyPoint objectDescriptors) {
-		this.objectDescriptors = objectDescriptors;
+	public void setObjectDescriptor(MatOfKeyPoint objectDescriptors) {
+		this.objectDescriptor = objectDescriptors;
 	}
 
 	public DescriptorExtractor getDescriptorExtractor() {

@@ -1,6 +1,7 @@
 package application;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,6 +19,8 @@ import org.opencv.features2d.Features2d;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import Utils.Utils;
+
 /*
  * Created by Sergio Rodriguez 12/7/17
  */
@@ -26,7 +29,6 @@ public class Match {
 	private float distanceThreshold = 0.7f;
 	private List<MatOfDMatch> matches;
 	private LinkedList<DMatch> goodMatchesList;
-	private DescriptorMatcher descriptorMatcher;
 	
 	//Match Object Constructor
 	public Match(SurfImage object, SurfImage scene) {
@@ -38,7 +40,7 @@ public class Match {
 	 * is above the match threshold determined by the distance threshold.
 	 */
 	public boolean areMatch() {
-		if(goodMatchesList.size() > matchThreshold)
+		if(goodMatchesList.size() >= matchThreshold)
 			return true;
 		
 		return false;
@@ -50,9 +52,9 @@ public class Match {
 	private void findMatches(SurfImage object, SurfImage scene){
 		//Get the features which match with 
 		matches = new LinkedList<MatOfDMatch>();
-        descriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
+		DescriptorMatcher descriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
         
-        descriptorMatcher.knnMatch(object.getObjectDescriptors(), scene.getObjectDescriptors(), matches, 2);
+        descriptorMatcher.knnMatch(object.getObjectDescriptor(), scene.getObjectDescriptor(), matches, 2);
         
 		//Get the 'good'matches suing the getGoodMacthes function -- look at getGoodMatches
         goodMatchesList = new LinkedList<>();
@@ -109,14 +111,6 @@ public class Match {
 		this.goodMatchesList = goodMatchesList;
 	}
 
-	public DescriptorMatcher getDescriptorMatcher() {
-		return descriptorMatcher;
-	}
-
-	public void setDescriptorMatcher(DescriptorMatcher descriptorMatcher) {
-		this.descriptorMatcher = descriptorMatcher;
-	}
-
 	/*********************************************************************************************************/
 		
 	/*
@@ -137,6 +131,10 @@ public class Match {
 	 * Will return the homography between two images by looking at the matching SURF features.
 	 */
 	public static Mat getHomography(Match matchObject, SurfImage object, SurfImage scene){
+		if(matchObject.getGoodMatchesList().size() <= matchObject.getMatchThreshold()) {
+			return new Mat();
+		}
+		
 		List<org.opencv.core.KeyPoint> objKeypointlist = object.getObjectKeyPoints().toList();
 		List<org.opencv.core.KeyPoint> scnKeypointlist = scene.getObjectKeyPoints().toList();
 
@@ -189,21 +187,58 @@ public class Match {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		SurfImage object = new SurfImage("images/bookObject.jpg");
-		SurfImage scene = new SurfImage("images/bookScene.jpg");
+		SurfImage bookSurfImage = new SurfImage("/home/serg/eclipse-workspace/JavaGUI_OpenCV/PepperGUI1.0/images/bookObject.jpg");
+		SurfImage bookSceneSurfImage =  new SurfImage("/home/serg/eclipse-workspace/JavaGUI_OpenCV/PepperGUI1.0/images/bookScene.jpg");
+		bookSurfImage.getSurfFeatures();
+		bookSceneSurfImage.getSurfFeatures();
 		
-		object.getSurfFeatures();
-		scene.getSurfFeatures();
+		Match bookMatches = new Match(bookSurfImage, bookSceneSurfImage);
 		
-		Match matches = new Match(object, scene);
-		matches.setMatchThreshold(10);
+		if(bookMatches.areMatch()) {
+			System.out.println("Object found");
+			Mat outputImage = getBorderOutlineImage(bookMatches, bookSurfImage, bookSceneSurfImage);
+			Imgcodecs.imwrite("outputImage.jpg", outputImage);
+		}else
+			System.out.println("Object not found");
 		
-		if( matches.areMatch()){
-			System.out.println("Object Found.");
-			Mat objInScene = getBorderOutlineImage(matches, object, scene);
-			Imgcodecs.imwrite("outputImage.jpg", objInScene);
+		return;
+		
+		/********************Stuff for loop in Controller Code*****************************************
+		//Outside of main loop
+		SurfImage bookSurfImage = new SurfImage("images/bookObject.jpg");
+		SurfImage object2SurfImage = new SurfImage("images/bookObject.jpg");
+		
+		bookSurfImage.getSurfFeatures();
+		object2SurfImage.getSurfFeatures();
+		
+		ArrayList<SurfImage> surfImages = new ArrayList<>();
+		surfImages.add(bookSurfImage);
+		surfImages.add(object2SurfImage);
+		
+		boolean showMatches = false; //Can't Show multiple matches as match function only utilizes 2 images
+		boolean showOutline = true;
+		
+		//In main loop
+		Mat frame = new Mat(); //Should be the frame from the video
+			
+		
+		for(int i = 0; i < surfImages.size(); i++) {
+			SurfImage frameSurfImage = new SurfImage(frame);
+			frameSurfImage.getSurfFeatures();	
+			
+			Match matches = new Match(surfImages.get(i), frameSurfImage);
+			// Maybe set threshold
+			//matches.setMatchThreshold(100);
+			
+			if(showOutline) {
+				if(matches.areMatch()) {
+					Imgproc.putText(frame, "Book and Card Found.", new org.opencv.core.Point(30*(i+1),30), org.opencv.core.Core.FONT_ITALIC, 1, new org.opencv.core.Scalar(-200,-200,250));
+					frame = getBorderOutlineImage(matches, bookSurfImage, frameSurfImage);
+				}
+			}
 		}
-		else
-			System.out.println("Object Not Found.");
+		
+		//imageToShow = Utils.mat2Image(frame);
+		//updateImageView(currentFrame, imageToShow);*/
 	}
 }
